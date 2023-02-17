@@ -12,3 +12,8 @@ Feel free to edit this, improve upon it, I'm not quite sure how github works but
 For making smaller widgets you can hackily change the for loop in the create widget function to only output say Two Task lists (overdue, today) an then that should run fine in a Large widget.
 
 Again it's not the prettiest and best solution probably, but its the best ive seen and can use.
+
+Here is an example.
+
+https://user-images.githubusercontent.com/98095245/219639077-d74f2e67-23f6-42e1-8079-c06b0cd8ffa0.MOV
+
