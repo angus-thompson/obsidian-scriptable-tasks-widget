@@ -1,5 +1,5 @@
 # obsidian-scriptable-tasks-widget
-This is javascript code to display my tasks from obsidian in an iPad OS extra large widget
+This is javascript code to display my tasks from obsidian in an iPad OS extra large widget using [Scriptable](https://scriptable.app)
 
 There are a few steps to set up. First you need to designate a bookmarked path in the scriptable app. Then you can change the required variables in the script and it should basically work
 
