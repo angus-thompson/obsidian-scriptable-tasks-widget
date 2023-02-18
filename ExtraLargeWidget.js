@@ -55,7 +55,11 @@ function createWidget(items, today) {
       	let task = stack.addStack();
         task.lineLimit = 1;
         let bullet = task.addText("▫️");
-        bullet.url = `obsidian://advanced-uri?vault=${vault}&filepath=` + encodeURIComponent(itemArray[1]) + "&openmode=silent&searchregex=" + encodeURIComponent("/- \\[ \\](.+?" + item.replaceAll("[", "\\[").replaceAll("]", "\\]").replaceAll("(", "\\(").replaceAll(")", "\\)").replaceAll(":", "\\:").replaceAll("/", "\\/").replaceAll("?", "\\?").replaceAll(".", "\\.").replaceAll("=", "\\=") + ".*)/").replaceAll("(", "%28").replaceAll(")", "%29") + "&replace=" + encodeURIComponent("- [x]$1✅" + today) + "&x-success=scriptable:///run/Obsidian%2520Tasks%2520Extra%2520Large%3FopenEditor%3Dfalse%26uriLaunch%3Dtrue";
+        //bullet.url = `scriptable:///run/TaskDone?openEditor=false&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}`
+        
+        bullet.url = URLScheme.forRunningScript() + `?openEditor=false&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}`;
+
+        //THIS IS OLD URL FOR MARKING TASK AS DONE -- bullet.url = `obsidian://advanced-uri?vault=${vault}&filepath=` + encodeURIComponent(itemArray[1]) + "&openmode=silent&searchregex=" + encodeURIComponent("/- \\[ \\](.+?" + item.replaceAll("[", "\\[").replaceAll("]", "\\]").replaceAll("(", "\\(").replaceAll(")", "\\)").replaceAll(":", "\\:").replaceAll("/", "\\/").replaceAll("?", "\\?").replaceAll(".", "\\.").replaceAll("=", "\\=") + ".*)/").replaceAll("(", "%28").replaceAll(")", "%29") + "&replace=" + encodeURIComponent("- [x]$1✅" + today) + "&x-success=scriptable:///run/Obsidian%2520Tasks%2520Extra%2520Large%3FopenEditor%3Dfalse%26uriLaunch%3Dtrue";
 
 	      bullet.font = Font.systemFont(12);
  	   	  bullet.textColor = Color.dynamic(Color.black(), Color.white());
@@ -152,7 +156,8 @@ async function findTasks(today) {
             let downloadFile = await fileManager.downloadFileFromiCloud(fileManager.bookmarkedPath(root)+ "/" + year + "/" + month + "/" + file);
             let fileContents = await fileManager.readString(fileManager.bookmarkedPath(root)+ "/" + year + "/" + month + "/" + file);
             let lines = fileContents.split("\n");
-            let originalTaskPath = root + "/" + year + "/" + month + "/" + file
+            let originalTaskPath = "/" + year + "/" + month + "/" + file
+            let lineIndex = 0
 
             for (let line of lines) {
               //Regexp to filter tasks and make a match that has [Full task, Task name, Due date, Task Name if no due date]
@@ -162,39 +167,38 @@ async function findTasks(today) {
               if (match) {
                 //If Task has a due date
                 if (match[2]) {
-                  
-                  let matchName = match[1].trimRight("📅");
-                  let date = Date.parse(match[2]);
-                  date = parseInt(date);
-                  let dateToday = Date.parse(today);
-                  dateToday = parseInt(dateToday);
-                  let tomorrow = dateToday+86400000;
-                  let twoWeeks = dateToday+86400000*14;
-									let dateRegex = new RegExp("(\\d\\d\\d\\d-\\d\\d-)(\\d\\d)")
-                  let dueDay = match[2].replace(dateRegex, "$2");
+                	  
+                	let matchName = match[1].trimRight("📅");
+                	let date = Date.parse(match[2]);
+                	date = parseInt(date);
+                	let dateToday = Date.parse(today);
+                	dateToday = parseInt(dateToday);
+                	let tomorrow = dateToday+86400000;
+                	let twoWeeks = dateToday+86400000*14;
+									let dateRegex = new RegExp("(\\d\\d\\d\\d-\\d\\d-)(\\d\\d)");
+                	let dueDay = match[2].replace(dateRegex, "$2");
                   
                   //sort task to array based on due date
                   if (date == dateToday) {
-                    todayTasks.push([matchName, date, originalTaskPath]);
+                    todayTasks.push([matchName, date, match[2], originalTaskPath, lineIndex]);
                     
                   } else if (date < dateToday) {
-                    overdueTasks.push([matchName, date, originalTaskPath]);
+                    overdueTasks.push([matchName, date, match[2], originalTaskPath, lineIndex]);
                     
                   } else if (date <= tomorrow) {
-                    tomorrowTasks.push([matchName, date, originalTaskPath]);
+                    tomorrowTasks.push([matchName, date, match[2], originalTaskPath, lineIndex]);
                     
                   } else if (date <= twoWeeks) {
-                    //Add date to these - I would like to sort them too but I cant be bothered
-                    nextTwoWeeksTasks.push([matchName, date, originalTaskPath]);
+                    nextTwoWeeksTasks.push([matchName, date, match[2], originalTaskPath, lineIndex]);
                     
                   }
                   
                 } else {
                   let matchName = match[3].trimRight("📅");
-                  longTermTasks.push([matchName, originalTaskPath])
+                  longTermTasks.push([matchName, match[2], originalTaskPath, lineIndex])
                 }
-
               }
+              lineIndex += 1
             }
           }
         }
@@ -209,8 +213,8 @@ async function findTasks(today) {
     tasks[i].sort(function(a, b) {
   		return a[1] - b[1];
 		});
-  	for (let x = 0; x < tasks[i].length; x++) {
-      tasks[i][x] = [tasks[i][x][0], tasks[i][x][2]];
+    for (x = 0; x < tasks[i].length; x++) {
+      tasks[i][x] = [tasks[i][x][0], tasks[i][x][2], tasks[i][x][3], tasks[i][x][4]];
     }
   }
 
@@ -219,7 +223,8 @@ async function findTasks(today) {
 
 
 const uriArguments = args.queryParameters
-const vault = "VAULT"
+
+const vault = "Test"
 
 //My Root Folder
 const root = "Test";
@@ -235,6 +240,13 @@ if (config.runsInWidget) {
   Script.complete();
 } else if (uriArguments.uriLaunch) {
   App.close();
+  let fileManager = FileManager.iCloud();
+  let downloadFile = await fileManager.downloadFileFromiCloud(fileManager.bookmarkedPath(root) + uriArguments.filePath);
+  let fileLines = fileManager.readString(fileManager.bookmarkedPath(root) + uriArguments.filePath);
+  fileLines = fileLines.split("\n");
+  fileLines[uriArguments.lineNumber] = "- [x] " + uriArguments.task + " 📅" + uriArguments.dateDue + " ✅" + today;
+  fileLines = fileLines.join("\n");
+  fileManager.writeString(fileManager.bookmarkedPath(root) + uriArguments.filePath, fileLines);
 } else {
   widget.presentExtraLarge();
 }
