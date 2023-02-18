@@ -3,8 +3,6 @@ String.prototype.trimRight = function(charlist) {
   return this.replace(new RegExp("[" + charlist + "]+$"), "");
 };
 
-
-
 function createWidget(items, today) {
   
   let clippedItems = items.slice(0, 5);
@@ -13,6 +11,8 @@ function createWidget(items, today) {
   //set up basic widget things
   let w = new ListWidget();
   w.url = `obsidian://advanced-uri?vault=${vault}&daily=true`;
+  
+  //Title
   let titleStack = w.addStack();
   titleStack.topAlignContent();
   let title = titleStack.addText("Tasks");
@@ -20,6 +20,18 @@ function createWidget(items, today) {
   title.textColor = Color.dynamic(Color.black(), Color.white());
   title.minimumScaleFactor = 1;
   title.url = `obsidian://advanced-uri?vault=${vault}&daily=true&heading=` + title.text;
+  
+  titleStack.addSpacer(15);
+  
+  //Add new task button
+  let newTasks = titleStack.addStack();
+  let newTasksButton = newTasks.addText("+ Add New");
+  newTasksButton.font = Font.semiboldRoundedSystemFont(15);
+  newTasksButton.textColor = Color.dynamic(Color.gray(), Color.lightGray());
+  newTasksButton.minimumScaleFactor = 1;
+  newTasksButton.url = `obsidian://advanced-uri?vault=${vault}&daily=true&heading=New%20Tasks&data=%22-%20%5B%20%5D%20%22&mode=prepend`
+  
+  
   w.addSpacer(2);
   
   let mainStack = w.addStack();
@@ -47,48 +59,45 @@ function createWidget(items, today) {
       line.font = Font.boldSystemFont(12);
       line.textColor = Color.dynamic(Color.black(), Color.white());
     } else {
-      //Else add the items from the clippeditems, only including up to 17 and adding See More... if more
+      //Else add the items from the clippeditems, only including up to 18 and adding See More... if more
       let maxLen = 18;
       
+      //Add each task, including links if necassary and add link to bullet point
       clippedItems[i] = clippedItems[i].slice(0, maxLen).map((itemArray)  => {
         item = itemArray[0]
       	let task = stack.addStack();
         task.lineLimit = 1;
-        let bullet = task.addText("▫️");
-        //bullet.url = `scriptable:///run/TaskDone?openEditor=false&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}`
-        
+        let bullet = task.addText("▫️");        
         bullet.url = URLScheme.forRunningScript() + `?openEditor=false&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}`;
-
-        //THIS IS OLD URL FOR MARKING TASK AS DONE -- bullet.url = `obsidian://advanced-uri?vault=${vault}&filepath=` + encodeURIComponent(itemArray[1]) + "&openmode=silent&searchregex=" + encodeURIComponent("/- \\[ \\](.+?" + item.replaceAll("[", "\\[").replaceAll("]", "\\]").replaceAll("(", "\\(").replaceAll(")", "\\)").replaceAll(":", "\\:").replaceAll("/", "\\/").replaceAll("?", "\\?").replaceAll(".", "\\.").replaceAll("=", "\\=") + ".*)/").replaceAll("(", "%28").replaceAll(")", "%29") + "&replace=" + encodeURIComponent("- [x]$1✅" + today) + "&x-success=scriptable:///run/Obsidian%2520Tasks%2520Extra%2520Large%3FopenEditor%3Dfalse%26uriLaunch%3Dtrue";
-
 	      bullet.font = Font.systemFont(12);
  	   	  bullet.textColor = Color.dynamic(Color.black(), Color.white());
         
+        //When a task has a link (website or note link), make sure link is interactable, and rest of task is not)
       	if (linkRegex.test(item)) {
-  	      let before = task.addText(item.replace(linkRegex, "$1"))
+          let before = task.addText(item.replace(linkRegex, "$1"))
    	  	  before.font = Font.systemFont(12);
     	    before.textColor = Color.dynamic(Color.black(), Color.white());
           before.lineLimit = 1;
+          
         	if (item.replace(linkRegex, "$2")) {
 	          let link = task.addText(item.replace(linkRegex, "$2"))
+            //filePath = item.replace(linkRegex, "$2").replaceAll(" ", "%2520") + ".md"
+            link.url = `obsidian://advanced-uri?vault=${vault}&filepath=` + item.replace(linkRegex, "$2").replaceAll(" ", "%2520") + ".md"
             link.textColor = new Color("#7e1dfb");
-   		   		link.font = Font.semiboldRoundedSystemFont(12);
-            filePath = item.replace(linkRegex, "$2").replaceAll(" ", "%2520") + ".md"
-            link.url = `obsidian://advanced-uri?vault=${vault}&filepath=` + filePath
-            link.lineLimit = 1;
+          	link.font = Font.semiboldRoundedSystemFont(12);
+          	link.lineLimit = 1;
           } else {
             let link = task.addText(item.replace(linkRegex, "$3"))
-            link.textColor = new Color("#7e1dfb");
-   		   		link.font = Font.semiboldRoundedSystemFont(12);
             link.url = item.replace(linkRegex, "$4")
-            link.lineLimit = 1;
+            link.textColor = new Color("#7e1dfb");
+          	link.font = Font.semiboldRoundedSystemFont(12);
+          	link.lineLimit = 1;
           }
           
         	let after = task.addText(item.replace(linkRegex, "$5"))
         	after.font = Font.systemFont(12);
         	after.textColor = Color.dynamic(Color.black(), Color.white());
           after.lineLimit = 1;
-        
         } else {
           let line = task.addText(item)
           line.font = Font.systemFont(12);
@@ -96,9 +105,8 @@ function createWidget(items, today) {
           line.lineLimit = 1;
         }
         
+        //For measuring length of widget to add a spacer later to make sure widget stays aligned to top
         widgetLength += 14.5
-        
-        
         if (widgetLength > widgetMaxLength) {
           widgetMaxLength = widgetLength
         }
@@ -106,7 +114,8 @@ function createWidget(items, today) {
       	return item;
       });
       
-      if (clippedItems[i].length == 18) {
+      //Add a see more... button if there are more tasks available
+      if (clippedItems[i].length < items[i].length) {
         let more = stack.addText("See more...")
         more.font = Font.semiboldRoundedSystemFont(12);
         more.textColor = new Color("#8f6fff");
@@ -121,7 +130,7 @@ function createWidget(items, today) {
     
   }
   
-  w.addSpacer(288-widgetMaxLength);
+  w.addSpacer(288.5-widgetMaxLength);
   
   return w
 }
@@ -138,6 +147,7 @@ async function findTasks(today) {
   let tomorrowTasks = [];
   let nextTwoWeeksTasks = [];
   let longTermTasks = [];
+  const dateRegex = /\d\d\d\d-\d\d-\d\d/;
   
   //Loops through each year folder
   for (let year of years) { 
@@ -167,15 +177,10 @@ async function findTasks(today) {
               if (match) {
                 //If Task has a due date
                 if (match[2]) {
-                	  
+                	
+                  //Sets up data to add to task arrays.
                 	let matchName = match[1].trimRight("📅");
-                	let date = Date.parse(match[2]);
-                	date = parseInt(date);
-                	let dateToday = Date.parse(today);
-                	dateToday = parseInt(dateToday);
-                	let tomorrow = dateToday+86400000;
-                	let twoWeeks = dateToday+86400000*14;
-									let dateRegex = new RegExp("(\\d\\d\\d\\d-\\d\\d-)(\\d\\d)");
+                	let date = parseInt(Date.parse(match[2]));
                 	let dueDay = match[2].replace(dateRegex, "$2");
                   
                   //sort task to array based on due date
@@ -224,13 +229,18 @@ async function findTasks(today) {
 
 const uriArguments = args.queryParameters
 
-const vault = "Test"
 
-//My Root Folder
+//Change these to your bookmarked path folder and vault name
+const vault = "Test"
 const root = "Test";
-//get today in format YYYY-MM-DD
-let today = new Date();
-today = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+
+//get today in format YYYY-MM-DD, also gets dateToday in millisecond format and tomorrow, and two weeks so that they can get compared later to decide when tasks are due
+const todayDate = new Date();
+const today = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, '0')}-${String(todayDate.getDate()).padStart(2, '0')}`
+const dateToday = parseInt(Date.parse(today));
+const tomorrow = dateToday+86400000;
+const twoWeeks = dateToday+86400000*14;
 
 let items = await findTasks(today);
 let widget = createWidget(items, today);
