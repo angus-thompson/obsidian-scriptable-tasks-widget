@@ -1,6 +1,5 @@
+![6B31465F-F7EA-40D2-9398-160851BEF56B](https://user-images.githubusercontent.com/98095245/219832584-59e30683-e441-4a8b-969a-fcdf828694b7.jpeg)
 
-
-https://user-images.githubusercontent.com/98095245/219821917-571706e8-6c07-4f1b-ae00-65c5141ef11b.MOV
 
 # obsidian-scriptable-tasks-widget
 This is javascript code to display my tasks from obsidian in an iPad OS extra large widget using [Scriptable](https://scriptable.app)
@@ -20,3 +19,5 @@ Feel free to edit this, improve upon it, I'm not quite sure how github works but
 For making smaller widgets you can hackily change the for loop in the create widget function to only output say Two Task lists (overdue, today) an then that should run fine in a Large widget.
 
 Again it's not the prettiest and best solution probably, but its the best ive seen and can use.
+
+https://user-images.githubusercontent.com/98095245/219821917-571706e8-6c07-4f1b-ae00-65c5141ef11b.MOV
