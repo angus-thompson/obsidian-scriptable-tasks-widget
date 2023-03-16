@@ -1,7 +1,9 @@
-![6B31465F-F7EA-40D2-9398-160851BEF56B](https://user-images.githubusercontent.com/98095245/219832584-59e30683-e441-4a8b-969a-fcdf828694b7.jpeg)
+
 
 
 # obsidian-scriptable-tasks-widget
+![A5927A3A-60DE-4A3A-8324-114FDF7CA5BB](https://user-images.githubusercontent.com/98095245/225629458-ec7bdbeb-2734-460a-ba18-7e3316a5894f.jpeg)
+
 This is javascript code to display my tasks from obsidian in an iPad OS extra large widget using [Scriptable](https://scriptable.app)
 
 There are a few steps to set up. First you need to designate a bookmarked path in the scriptable app. Then you can change the required variables in the script and it should basically work
@@ -32,4 +34,4 @@ Should be all good
 Do note that spacing and things are hard coded and probable need to be edited depending on your phone or device. The values to edit this would be the widgetheight variable. Also textsize and max displayed lines are easily changable
 
 
-https://user-images.githubusercontent.com/98095245/219821917-571706e8-6c07-4f1b-ae00-65c5141ef11b.MOV
+
