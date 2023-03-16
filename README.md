@@ -16,8 +16,20 @@ Also, apparently there may be some issues if there are too many daily notes, how
 
 Feel free to edit this, improve upon it, I'm not quite sure how github works but if you can submit improvements to here that would be appreciated.
 
-For making smaller widgets you can hackily change the for loop in the create widget function to only output say Two Task lists (overdue, today) an then that should run fine in a Large widget.
-
 Again it's not the prettiest and best solution probably, but its the best ive seen and can use.
+
+(Also this assumes your scriptable files are accessible with the bookmarked path "Scriptable" -- this is for the checkmark images)
+
+### **INSTALLATION STEPS**
+
+Add the images to your scriptable folder
+Change the variables Vault and Root to the required paths for accessing your obsidian files
+
+Add a widget to your homescreen, in the widget paramaters type in the task lists that you would like to show (smaller widgets than extraLarge are really only good at showing one list) Format for this is -- Today|Tomorrow|Two Weeks etc.
+
+Should be all good
+
+Do note that spacing and things are hard coded and probable need to be edited depending on your phone or device. The values to edit this would be the widgetheight variable. Also textsize and max displayed lines are easily changable
+
 
 https://user-images.githubusercontent.com/98095245/219821917-571706e8-6c07-4f1b-ae00-65c5141ef11b.MOV
