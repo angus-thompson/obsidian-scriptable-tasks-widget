@@ -75,11 +75,11 @@ function createWidget(tasks, today, displayTasks, textSize, maxLen, widgetHeight
         if (itemArray[4] == today) {
           let bullet = addTask.addImage(imageManager.readImage(imagePath + `/Complete.png`));
           bullet.imageSize = new Size(textSize*1.25,textSize*1.25);
-          bullet.url = URLScheme.forRunningScript() + `?openEditor=true&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}&complete=false`
+          bullet.url = URLScheme.forRunningScript() + `?openEditor=false&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}&complete=false`
         } else {
         	let bullet = addTask.addImage(imageManager.readImage(imagePath + `/Incomplete.png`));
           bullet.imageSize = new Size(textSize*1.25,textSize*1.25);
-        	bullet.url = URLScheme.forRunningScript() + `?openEditor=true&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}&complete=true`;
+        	bullet.url = URLScheme.forRunningScript() + `?openEditor=false&uriLaunch=true&task=${encodeURIComponent(itemArray[0])}&dateDue=${encodeURIComponent(itemArray[1])}&filePath=${encodeURIComponent(itemArray[2])}&lineNumber=${itemArray[3]}&complete=true`;
         }
         //When a task has a link (website or note link), make sure link is interactable, and rest of task is not)
       	if (linkRegex.test(item)) {
